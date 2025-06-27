@@ -15,11 +15,9 @@ public class CustomerServiceImpl implements CustomerService {
     private static final Logger logger = LoggerFactory.getLogger(CustomerServiceImpl.class);
 
     private final CustomerRepository customerRepository;
-
     public CustomerServiceImpl(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
     }
-
 
     @Override
     public List<Customer> getAllCustomers() {
@@ -43,7 +41,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer updateCustomer(Long id, Customer customer) {
         logger.info("Updating customer with ID: {}", id);
-        boolean customerStatus = customerRepository.existsById(id);
+//        boolean customerStatus = customerRepository.existsById(id);
         return customerRepository.findById(id)
                 .map(existingCustomer -> {
                     existingCustomer.setName(customer.getName());

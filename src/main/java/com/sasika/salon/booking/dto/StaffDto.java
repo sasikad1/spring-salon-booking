@@ -1,44 +1,33 @@
-package com.sasika.salon.booking.entity;
+package com.sasika.salon.booking.dto;
 
-import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-import java.util.List;
-
-@Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Staff {
-
-    @Id
-    @GeneratedValue(strategy= GenerationType.IDENTITY)
+public class StaffDto {
     private Long id;
 
+    @NotBlank(message = "Staff name is required")
     private String name;
 
+    @NotBlank(message = "Email is required")
     @Email(message = "Invalid email format")
     private String email;
 
+    @NotBlank(message = "Phone number is required")
     @Pattern(
             regexp = "^(0\\d{9})$",
             message = "Phone number must start with 0 and be 10 digits long"
     )
     private String phoneNumber;
 
-    @NotNull
-    @ManyToOne
-    @JoinColumn(name = "branch_id", nullable = false)
-    private Branch branch;
-
-    @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL)
-    private List<Appointment> appointments;
-
+    @NotNull(message = "Branch ID is required")
+    private Long branchId;
 }

@@ -43,6 +43,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer updateCustomer(Long id, Customer customer) {
         logger.info("Updating customer with ID: {}", id);
+        boolean customerStatus = customerRepository.existsById(id);
         return customerRepository.findById(id)
                 .map(existingCustomer -> {
                     existingCustomer.setName(customer.getName());
@@ -60,8 +61,16 @@ public class CustomerServiceImpl implements CustomerService {
 
 
     @Override
-    public void deleteCustomer(Long id) {
+    public String deleteCustomer(Long id) {
         logger.info("Deleting customer with ID: {}", id);
+
+        boolean existingCustomer = customerRepository.existsById(id);
+        if(!existingCustomer){
+            return "Customer not found with ID: " + id;
+        }
         customerRepository.deleteById(id);
+
+        return "Customer with ID " + id + " deleted successfully";
     }
+
 }

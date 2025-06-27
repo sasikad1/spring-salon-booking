@@ -76,7 +76,10 @@ public class CustomerController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteCustomer(@PathVariable Long id){
-        customerService.deleteCustomer(id);
-        return ResponseEntity.ok("Customer deleted successfully");
+        String deleteStatus = customerService.deleteCustomer(id);
+        if(deleteStatus.contains("not found")){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(deleteStatus);
+        }
+        return ResponseEntity.ok(deleteStatus);
     }
 }

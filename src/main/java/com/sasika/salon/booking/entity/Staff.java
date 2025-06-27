@@ -38,6 +38,7 @@ public class Staff {
     @JoinColumn(name = "branch_id", nullable = false)
     private Branch branch;
 
-    @OneToMany(mappedBy = "appointment_id",  cascade = CascadeType.ALL)
-    private List<Appointment> appointment;
+    @OneToMany(mappedBy = "staff", cascade = CascadeType.ALL)
+    private List<Appointment> appointments;
+
 }

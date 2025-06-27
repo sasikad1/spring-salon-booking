@@ -29,6 +29,7 @@ public class Appointment {
     @JoinColumn(name = "staff_id", nullable = false)
     private Staff staff;
 
+
     @NotNull
     @ManyToOne
     @JoinColumn(name = "branch_id", nullable = false)
@@ -59,4 +60,5 @@ public class Appointment {
 
     @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL)
     private List<Notification> notifications;
+
 }

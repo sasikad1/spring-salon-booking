@@ -18,8 +18,12 @@ public class CustomerDto {
     private String name;
 
     @NotBlank(message = "Phone number is required")
-    @Pattern(regexp = "^(0\\d{9})$", message = "Phone number must be 10 digits starting with 0")
+    @Pattern(
+            regexp = "^(0\\d{9})$",
+            message = "Phone number must start with 0 and be 10 digits long"
+    )
     private String phoneNumber;
+
 
     @Email(message = "Invalid email format")
     private String email;

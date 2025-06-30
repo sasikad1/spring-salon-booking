@@ -21,7 +21,7 @@ public class Notification {
 
     @NotNull
     @ManyToOne
-    @JoinColumn(name = "customer_id)", nullable = false)
+    @JoinColumn(name = "customer_id", nullable = false)
     private Customer customer;
 
     @NotNull

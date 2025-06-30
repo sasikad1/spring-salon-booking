@@ -54,9 +54,10 @@ public class Appointment {
     @JoinTable(
             name = "appointment_service",
             joinColumns = @JoinColumn(name = "appointment_id"),
-            inverseJoinColumns = @JoinColumn(name = "service_id")
+            inverseJoinColumns = @JoinColumn(name = "salon_ service_id")
     )
-    private List<Service> services;
+    private List<SalonService> salonServices;
+
 
     @OneToMany(mappedBy = "appointment", cascade = CascadeType.ALL)
     private List<Notification> notifications;

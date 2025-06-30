@@ -23,7 +23,7 @@ public class BranchServiceImpl implements BranchService {
 
     @Override
     public List<Branch> getAllBranches(){
-        logger.info("Find all customers");
+        logger.info("Fetching all branches");
         return branchRepository.findAll();
     }
 
@@ -54,7 +54,7 @@ public class BranchServiceImpl implements BranchService {
                 })
                 .orElseThrow(()->{
                     logger.info("Branch not found {}", id);
-                    return new RuntimeException("Customer Not Found By Id "+id);
+                    return new RuntimeException("Branch not found with ID: " + id);
                 });
     }
 

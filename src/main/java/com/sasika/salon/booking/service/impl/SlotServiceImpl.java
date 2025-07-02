@@ -53,7 +53,8 @@ public class SlotServiceImpl implements SlotService {
 @Transactional
 @Override
 public String generateSlotsForDate(LocalDate date) {
-    List<Staff> staffMembers = staffRepo.findAll();
+//    List<Staff> staffMembers = staffRepo.findAll();
+    List<Staff> staffMembers = staffRepo.findAllWithBranchAndWorkingHours();
     int totalSlotsSaved = 0;
 
     for (Staff staff : staffMembers) {
@@ -95,96 +96,6 @@ public String generateSlotsForDate(LocalDate date) {
 
     return "✅ Total slots saved: " + totalSlotsSaved;
 }
-
-
-    //    create slots
-//    @Transactional
-//    @Override
-//    public String generateSlotsForDate(LocalDate date) {
-//        StringBuilder result = new StringBuilder();
-//        String dayOfWeek = date.getDayOfWeek().name();
-//
-//        List<Branch> branches = branchRepo.findAllWithStaffAndWorkingHours();
-//        result.append("Branches found: ").append(branches.size()).append("\n");
-//
-//        for (Branch branch : branches) {
-//            // Log working hours
-//            result.append("→ Working Days for Branch '").append(branch.getName()).append("':\n");
-//            branch.getWorkingHours().forEach(wh -> {
-//                result.append("   - ")
-//                        .append(wh.getDayOfWeek())
-//                        .append(" | Open: ").append(wh.getOpenTime())
-//                        .append(" - ").append(wh.getCloseTime())
-//                        .append(" | Closed: ").append(wh.isClosed())
-//                        .append("\n");
-//            });
-//
-//            // Check if branch is open on this day
-//            var optionalWorkingHour = branch.getWorkingHours()
-//                    .stream()
-//                    .filter(w -> w.getDayOfWeek().equalsIgnoreCase(dayOfWeek) && !w.isClosed())
-//                    .findFirst();
-//
-//            if (optionalWorkingHour.isEmpty()) {
-//                result.append("⚠️  Branch '").append(branch.getName()).append("' is closed on ").append(dayOfWeek).append("\n");
-//                continue;
-//            }
-//
-//            LocalTime openTime = optionalWorkingHour.get().getOpenTime();
-//            LocalTime closeTime = optionalWorkingHour.get().getCloseTime();
-//
-//            List<Staff> staffList = branch.getStaffList();
-//            result.append("Branch: ").append(branch.getName()).append(" | Staff count: ").append(staffList.size()).append("\n");
-//
-//            for (Staff staff : staffList) {
-//                int slotDuration = staff.getSlotDurationInMinutes();
-//
-//                if (slotDuration <= 0) {
-//                    result.append("⚠️  Invalid slot duration for staff ").append(staff.getName()).append("\n");
-//                    continue;
-//                }
-//
-//                // Check if slots already exist for this staff and date to prevent duplicates
-//                boolean slotsExist = slotRepo.existsBySlotDateAndStaffIdAndBranchId(date, staff.getId(), branch.getId());
-//
-//                if (slotsExist) {
-//                    result.append("⚠️  Slots already exist for staff ")
-//                            .append(staff.getName())
-//                            .append(" in branch ").append(branch.getName())
-//                            .append(" on ").append(date).append("\n");
-//                    continue;
-//                }
-//
-//
-//
-//                // Start generating slots
-//                LocalTime currentTime = openTime;
-//                int count = 0;
-//                while (currentTime.plusMinutes(slotDuration).isBefore(closeTime.plusSeconds(1))) {
-//                    Slot slot = Slot.builder()
-//                            .branch(branch)
-//                            .staff(staff)
-//                            .slotDate(date)
-//                            .startTime(currentTime)
-//                            .endTime(currentTime.plusMinutes(slotDuration))
-//                            .durationInMinutes(slotDuration)
-//                            .available(true)
-//                            .slotType(SlotType.WORKING)
-//                            .build();
-//
-//                    slotRepo.save(slot);
-//                    currentTime = currentTime.plusMinutes(slotDuration);
-//                    count++;
-//                }
-//
-//                result.append("✅ Generated ").append(count).append(" slots for staff ").append(staff.getName())
-//                        .append(" (Duration: ").append(slotDuration).append(" mins)\n");
-//            }
-//        }
-//
-//        return result.toString();
-//    }
-
 
 
     @Override

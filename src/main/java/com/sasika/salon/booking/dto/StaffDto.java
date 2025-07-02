@@ -28,6 +28,10 @@ public class StaffDto {
     )
     private String phoneNumber;
 
+    private Integer slotDurationInMinutes;
+
+    private String role; // e.g., Hairdresser, Barber, etc.
+
     @NotNull(message = "Branch ID is required")
     private Long branchId;
 }

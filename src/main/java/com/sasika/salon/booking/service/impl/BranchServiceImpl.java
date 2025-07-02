@@ -1,72 +1,82 @@
 package com.sasika.salon.booking.service.impl;
 
 import com.sasika.salon.booking.entity.Branch;
+import com.sasika.salon.booking.entity.WorkingHours;
 import com.sasika.salon.booking.repository.BranchRepository;
-import com.sasika.salon.booking.repository.CustomerRepository;
 import com.sasika.salon.booking.service.BranchService;
-import org.springframework.stereotype.Service;
-
+import jakarta.persistence.EntityNotFoundException;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
 
 @Service
 public class BranchServiceImpl implements BranchService {
     private static final Logger logger = LoggerFactory.getLogger(BranchServiceImpl.class);
 
-    private  final BranchRepository branchRepository;
-    public BranchServiceImpl(BranchRepository branchRepository) {
+    private final BranchRepository branchRepository;
+    private final ModelMapper modelMapper;
+
+    public BranchServiceImpl(BranchRepository branchRepository, ModelMapper modelMapper) {
         this.branchRepository = branchRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
-    public List<Branch> getAllBranches(){
+    public List<Branch> getAllBranches() {
         logger.info("Fetching all branches");
         return branchRepository.findAll();
     }
 
     @Override
-    public Branch getBranchById(Long id){
-        logger.info("Find Branch by id {}", id);
+    public Branch getBranchById(Long id) {
+        logger.info("Finding branch by ID: {}", id);
         return branchRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("Branch not found"+id));
+                .orElseThrow(() -> new RuntimeException("Branch not found with ID: " + id));
     }
 
-    public Branch createBranch(Branch branch){
-        logger.info("Creating new branch {}", branch);
+    @Override
+    public Branch createBranch(Branch branch) {
+        logger.info("Creating new branch: {}", branch);
+
+        if (branch.getWorkingHours() != null) {
+            branch.getWorkingHours().forEach(wh -> wh.setBranch(branch)); // Set back-reference
+        }
+
         return branchRepository.save(branch);
     }
 
     @Override
-    public Branch updateBranch(Long id, Branch branch){
-        logger.info("Update branch {}", branch);
-        return branchRepository.findById(id)
-                .map(existingBranch->{
-                    existingBranch.setName(branch.getName());
-                    existingBranch.setAddress(branch.getAddress());
-                    existingBranch.setPhoneNumber(branch.getPhoneNumber());
-                    existingBranch.setEmail(branch.getEmail());
-                    existingBranch.setStaffList(branch.getStaffList());
-                    existingBranch.setAppointments(branch.getAppointments());
-                    return branchRepository.save(existingBranch);
-                })
-                .orElseThrow(()->{
-                    logger.info("Branch not found {}", id);
-                    return new RuntimeException("Branch not found with ID: " + id);
-                });
+    public Branch updateBranch(Long id, Branch newBranchData) {
+        return branchRepository.findById(id).map(existing -> {
+
+            existing.setName(newBranchData.getName());
+            existing.setAddress(newBranchData.getAddress());
+            existing.setPhoneNumber(newBranchData.getPhoneNumber());
+            existing.setEmail(newBranchData.getEmail());
+
+            // FIX orphanRemoval issue by mutating the collection
+            existing.getWorkingHours().clear();
+            for (WorkingHours wh : newBranchData.getWorkingHours()) {
+                wh.setBranch(existing); // set owning side
+                existing.getWorkingHours().add(wh);
+            }
+
+            return branchRepository.save(existing);
+        }).orElseThrow(() -> new EntityNotFoundException("Branch not found"));
     }
+
+
 
     @Override
-    public String deleteBranch(Long id){
-        logger.info("Delete branch {}", id);
-        boolean existsBranch = branchRepository.existsById(id);
-        if(!existsBranch){
-            return "Branch not found with id "+id;
+    public String deleteBranch(Long id) {
+        logger.info("Deleting branch with ID: {}", id);
+        if (!branchRepository.existsById(id)) {
+            return "Branch not found with ID: " + id;
         }
         branchRepository.deleteById(id);
-        return "Successfully deleted branch with id "+id;
+        return "Successfully deleted branch with ID: " + id;
     }
-
 }

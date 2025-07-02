@@ -3,8 +3,8 @@ package com.sasika.salon.booking.entity;
 import com.sasika.salon.booking.enums.SlotType;
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -12,46 +12,45 @@ import java.time.LocalTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Slot {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private LocalDate date;
-
-    private LocalTime startTime;
-    private LocalTime endTime;
-
-    private boolean isAvailable = true; // false if manually blocked/unavailable
-
-    private String reason; // e.g., "Lunch break", "Sick leave", "Branch holiday"
-
-    @Enumerated(EnumType.STRING)
-    private SlotType slotType; // WORKING, BREAK, BLOCKED, CUSTOM_UNAVAILABLE
-
-    @ManyToOne
-    @JoinColumn(name = "staff_id", nullable = false)
-    private Staff staff;
-
-    @ManyToOne
+    // 🔗 Slot belongs to a Branch
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "branch_id", nullable = false)
     private Branch branch;
 
-    @OneToOne(mappedBy = "slot", cascade = CascadeType.ALL)
-    private Appointment appointment;
+    // 🔗 Slot belongs to a Staff (who defines slot duration)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "staff_id", nullable = false)
+    private Staff staff;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    // 📅 Date this slot is valid for (e.g., 2025-07-01)
+    @Column(nullable = false)
+    private LocalDate slotDate;
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = createdAt;
-    }
+    // 🕒 Slot start and end time
+    @Column(nullable = false)
+    private LocalTime startTime;
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
+    @Column(nullable = false)
+    private LocalTime endTime;
+
+    // ✅ Whether the slot is available for booking
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean available = true;
+
+    // 🔄 Slot type (default = WORKING)
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SlotType slotType = SlotType.WORKING;
+
+    // Optionally, store the actual slot duration (snapshot)
+    @Column(nullable = false)
+    private Integer durationInMinutes;
 }

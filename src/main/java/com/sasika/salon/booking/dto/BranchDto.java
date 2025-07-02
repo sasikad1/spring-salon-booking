@@ -1,10 +1,15 @@
 package com.sasika.salon.booking.dto;
 
+import com.sasika.salon.booking.entity.WorkingHours;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.DayOfWeek;
+import java.util.List;
+import java.util.Map;
 
 @Data
 @NoArgsConstructor
@@ -27,4 +32,6 @@ public class BranchDto {
 
     @NotBlank(message = "Email is required")
     private String email;
+
+    private List<WorkingHoursDto> workingHours;
 }

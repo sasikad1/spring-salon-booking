@@ -54,7 +54,7 @@ public class Appointment {
     @JoinTable(
             name = "appointment_service",
             joinColumns = @JoinColumn(name = "appointment_id"),
-            inverseJoinColumns = @JoinColumn(name = "salon_ service_id")
+            inverseJoinColumns = @JoinColumn(name = "salon_service_id")
     )
     private List<SalonService> salonServices;
 
